@@ -1,4 +1,4 @@
-package com.example.hamster;
+package com.example.hamster.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -6,6 +6,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -13,13 +17,26 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.bumptech.glide.Glide;
+import com.example.hamster.R;
+import com.example.hamster.adapter.loaiSPAdapter;
+import com.example.hamster.model.loaiSP;
+import com.example.hamster.retrofit.ApiHamster;
+import com.example.hamster.retrofit.retrofitClient;
+import com.example.hamster.utils.utils;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,23 +44,41 @@ public class MainActivity extends AppCompatActivity {
     ViewFlipper viewFlipper;
     RecyclerView recyclerView;
     NavigationView navigationView;
-    ListView listView;
+    ListView listViewManHinhChinh;
     DrawerLayout drawerLayout;
+    loaiSPAdapter loaiSPAdapter;
+    List<loaiSP> mangLoaiSP;
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    ApiHamster apiHamster;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        apiHamster = retrofitClient.getInstance(utils.BASE_URL).create(ApiHamster.class);
+
+
         AnhXa();
         ActionBar();
-        ActionViewFlipper();
+
+        if (isConnected(this)) {
+
+            ActionViewFlipper();
+            getLoaiSP();
+
+        }else {
+            Toast.makeText(getApplicationContext() ,"khong ket noi ", Toast.LENGTH_SHORT).show();
+        }
     }
     private void AnhXa(){
         toolbar =findViewById(R.id.toolBarManHinhChinh);
         viewFlipper = findViewById(R.id.viewFlippermanHinhChinh);
         recyclerView = findViewById(R.id.rcvSanPham);
         navigationView = findViewById(R.id.navigationView);
-        listView = findViewById(R.id.listViewManHinhChinh);
+        listViewManHinhChinh = findViewById(R.id.listViewManHinhChinh);
         drawerLayout = findViewById(R.id.drawerLayout);
+        // khoi tao mang
+        mangLoaiSP = new ArrayList<>();
+
 
     }
     private void ActionBar(){
@@ -75,5 +110,35 @@ public class MainActivity extends AppCompatActivity {
         viewFlipper.setInAnimation(slide_in);
         viewFlipper.setOutAnimation(slide_out);
     }
+    private boolean isConnected(Context context){
+        ConnectivityManager connectivityManager= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if((wifi != null && wifi.isConnected())||(mobile !=null && mobile.isConnected())){
+            return true;
+        }else {
 
+            return false;
+        }
+    }
+     private void getLoaiSP(){
+        compositeDisposable.add(apiHamster.getLoaiSP()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        loaiSPModel -> {
+                            if(loaiSPModel.isSuccess()){
+                                mangLoaiSP=loaiSPModel.getResult();
+                                loaiSPAdapter = new loaiSPAdapter(getApplicationContext(),mangLoaiSP);
+                                listViewManHinhChinh.setAdapter(loaiSPAdapter);
+                            }
+                        }
+                ));
+     }
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
+    }
 }
