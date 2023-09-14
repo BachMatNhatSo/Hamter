@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -15,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -23,7 +26,10 @@ import android.widget.ViewFlipper;
 import com.bumptech.glide.Glide;
 import com.example.hamster.R;
 import com.example.hamster.adapter.loaiSPAdapter;
+import com.example.hamster.adapter.sanPhamMoiAdapter;
 import com.example.hamster.model.loaiSP;
+import com.example.hamster.model.sanPhamMoi;
+import com.example.hamster.model.sanPhamMoiModel;
 import com.example.hamster.retrofit.ApiHamster;
 import com.example.hamster.retrofit.retrofitClient;
 import com.example.hamster.utils.utils;
@@ -50,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     List<loaiSP> mangLoaiSP;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     ApiHamster apiHamster;
+    List<sanPhamMoi> mangSpMoi;
+    sanPhamMoiAdapter spAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
             ActionViewFlipper();
             getLoaiSP();
+            getSPMoi();
+            getEventClick();
 
         }else {
             Toast.makeText(getApplicationContext() ,"khong ket noi ", Toast.LENGTH_SHORT).show();
@@ -75,12 +85,54 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rcvSanPham);
         navigationView = findViewById(R.id.navigationView);
         listViewManHinhChinh = findViewById(R.id.listViewManHinhChinh);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
         drawerLayout = findViewById(R.id.drawerLayout);
         // khoi tao mang
         mangLoaiSP = new ArrayList<>();
+        mangSpMoi = new ArrayList<>();
 
 
     }
+    private void getEventClick(){
+        listViewManHinhChinh.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        Intent trangchu = new Intent(getApplicationContext(),TrangChuActivity.class);
+                        startActivity(trangchu);
+                        break;
+                    case 1:
+                        Intent hamster = new Intent(getApplicationContext(),HamsterActivity.class);
+                        hamster.putExtra("loai",1);
+                        startActivity(hamster);
+
+                        break;
+                    case 2:
+                        Intent thucan = new Intent(getApplicationContext(),ThucAnActivity.class);
+                        startActivity(thucan);
+                        break;
+                }
+            }
+        });
+    }
+    private void getSPMoi(){
+        compositeDisposable.add(apiHamster.getSPMoi()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        sanPhamMoiModel -> {
+                            if(sanPhamMoiModel.isSuccess()){
+                                mangSpMoi =sanPhamMoiModel.getResult();
+                                spAdapter = new sanPhamMoiAdapter(getApplicationContext(),mangSpMoi);
+                                recyclerView.setAdapter(spAdapter);
+                            }
+                        }
+                ));
+    }
+
     private void ActionBar(){
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
