@@ -105,12 +105,17 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(trangchu);
                         break;
                     case 1:
-                        Intent hamster = new Intent(getApplicationContext(),HamsterActivity.class);
-                        hamster.putExtra("loai",1);
-                        startActivity(hamster);
+                        Intent hamster1 = new Intent(getApplicationContext(),HamsterActivity.class);
+                        hamster1.putExtra("loai",1);
+                        startActivity(hamster1);
 
                         break;
                     case 2:
+                        Intent hamster2 = new Intent(getApplicationContext(),HamsterActivity.class);
+                        hamster2.putExtra("loai",2);
+                        startActivity(hamster2);
+                        break;
+                    case 3:
                         Intent thucan = new Intent(getApplicationContext(),ThucAnActivity.class);
                         startActivity(thucan);
                         break;

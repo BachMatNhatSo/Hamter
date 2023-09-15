@@ -1,11 +1,13 @@
 package com.example.hamster.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,6 +35,9 @@ public class HamsterActivity extends AppCompatActivity {
     int loai;
     hamsterAdapter adapterhamster;
     List<sanPhamMoi> sanPhamMoiList;
+    LinearLayoutManager linearLayoutManager;
+    Handler handler=new Handler();
+    boolean isLoading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,19 +47,76 @@ public class HamsterActivity extends AppCompatActivity {
 
         AnhXa();
         ActionToolBar();
-        getData();
+        getData(page);
+        addEventLoad();
     }
 
-    private void getData() {
+    private void addEventLoad() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(isLoading == false ){
+                    if(linearLayoutManager.findLastCompletelyVisibleItemPosition()==sanPhamMoiList.size()-1){
+                        isLoading=true;
+                        loadMore();
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadMore(){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+            sanPhamMoiList.add(null);
+            adapterhamster.notifyItemInserted(sanPhamMoiList.size()-1);
+
+            }
+        });
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sanPhamMoiList.remove(sanPhamMoiList.size()-1);
+                adapterhamster.notifyItemInserted(sanPhamMoiList.size());
+                page=page+1;
+                getData(page);
+                adapterhamster.notifyDataSetChanged();
+                isLoading=false;
+            }
+        },2000);
+    }
+    private void getData(int page) {
         compositeDisposable.add(apiHamster.getSPTheoLoai(page,loai)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         sanPhamMoiModel -> {
                             if(sanPhamMoiModel.isSuccess()){
-                                sanPhamMoiList= sanPhamMoiModel.getResult();
-                                adapterhamster =new hamsterAdapter(getApplicationContext(),sanPhamMoiList);
-                                recyclerView.setAdapter(adapterhamster);
+                                if (adapterhamster == null) {
+                                    sanPhamMoiList= sanPhamMoiModel.getResult();
+                                    adapterhamster =new hamsterAdapter(getApplicationContext(),sanPhamMoiList);
+                                    recyclerView.setAdapter(adapterhamster);
+
+                                }else{
+                                    int vitri= sanPhamMoiList.size()-1;
+                                    int soluongadd =sanPhamMoiModel.getResult().size();
+                                    for(int i=0 ;i<soluongadd;i++){
+                                        sanPhamMoiList.add(sanPhamMoiModel.getResult().get(i));
+                                    }
+                                    adapterhamster.notifyItemRangeChanged(vitri,soluongadd);
+                                }
+
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),"Hết sản phẩm rồi",Toast.LENGTH_SHORT).show();
+                                isLoading=true;
                             }
                         },throwable -> {
                             Toast.makeText(getApplicationContext(), "Khong the ket noi ", Toast.LENGTH_LONG).show();
@@ -77,8 +139,8 @@ public class HamsterActivity extends AppCompatActivity {
     private void AnhXa() {
         toolbar = findViewById(R.id.toolbarManHinhHamster);
         recyclerView =findViewById(R.id.rcvManHinhHamster);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         sanPhamMoiList = new ArrayList<>();
 

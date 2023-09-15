@@ -1,6 +1,8 @@
 package com.example.hamster.model;
 
-public class sanPhamMoi {
+import java.io.Serializable;
+
+public class sanPhamMoi implements Serializable {
     int id;
     String tensanpham;
     String giasp;
