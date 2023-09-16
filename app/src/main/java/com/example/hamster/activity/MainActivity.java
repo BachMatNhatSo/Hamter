@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import com.example.hamster.retrofit.ApiHamster;
 import com.example.hamster.retrofit.retrofitClient;
 import com.example.hamster.utils.utils;
 import com.google.android.material.navigation.NavigationView;
+import com.nex3z.notificationbadge.NotificationBadge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     ApiHamster apiHamster;
     List<sanPhamMoi> mangSpMoi;
     sanPhamMoiAdapter spAdapter;
+    NotificationBadge notificationBadge;
+    FrameLayout frameGioHang;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rcvSanPham);
         navigationView = findViewById(R.id.navigationView);
         listViewManHinhChinh = findViewById(R.id.listViewManHinhChinh);
+        notificationBadge = findViewById(R.id.btnCartInChiTiet);
+        frameGioHang =findViewById(R.id.frameGioHang);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
@@ -92,9 +98,37 @@ public class MainActivity extends AppCompatActivity {
         // khoi tao mang
         mangLoaiSP = new ArrayList<>();
         mangSpMoi = new ArrayList<>();
+        if(utils.mangGioHang==null){
+            utils.mangGioHang =new ArrayList<>();
+        }
+        else {
+            int totalItem =0 ;
+            for (int i=0; i<utils.mangGioHang.size(); i++){
+                totalItem = totalItem +utils.mangGioHang.get(i).getSoluong();
+            }
+            notificationBadge.setText(String.valueOf(totalItem));
+        }
+        frameGioHang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(getApplicationContext(),gioHangActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int totalItem =0 ;
+        for (int i=0; i<utils.mangGioHang.size(); i++){
+            totalItem = totalItem +utils.mangGioHang.get(i).getSoluong();
+        }
+        notificationBadge.setText(String.valueOf(totalItem));
+    }
+
     private void getEventClick(){
         listViewManHinhChinh.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
