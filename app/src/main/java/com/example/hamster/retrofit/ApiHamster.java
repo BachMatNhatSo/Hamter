@@ -1,6 +1,8 @@
 package com.example.hamster.retrofit;
 
 
+import com.example.hamster.model.User;
+import com.example.hamster.model.UserModel;
 import com.example.hamster.model.loaiSPModel;
 import com.example.hamster.model.sanPhamMoiModel;
 
@@ -22,6 +24,23 @@ public interface ApiHamster {
     Observable<sanPhamMoiModel> getSPTheoLoai(
             @Field("page") int page,
             @Field("loai") int loai
+    );
+    @POST("dangky.php")
+    @FormUrlEncoded
+    Observable<UserModel> dangky(
+            @Field("email") String email,
+            @Field("password") String password,
+            @Field("username") String username,
+            @Field("phone") String phone
+
+    );
+    @POST("dangnhap.php")
+    @FormUrlEncoded
+    Observable<UserModel> dangnhap(
+            @Field("email") String email,
+            @Field("password") String password
+
+
     );
 
 }
