@@ -67,6 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></androidx.appcompat.widget.AppCompatButton>
     <LinearLayout
+        android:id="@+id/layoutChuaCoTK"
         app:layout_constraintTop_toBottomOf="@+id/btnDangNhap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,6 +85,25 @@
         <TextView
             android:id="@+id/txtDangKy"
             android:text="Đăng Ký "
+            android:textColor="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layoutquenmk"
+        app:layout_constraintTop_toBottomOf="@+id/layoutChuaCoTK"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="10dp"
+        android:gravity="right"
+        >
+        <TextView
+            android:id="@+id/txtQuenMatKhau"
+            android:text="Quên Mật Khẩu"
             android:textColor="@color/red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">

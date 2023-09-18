@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class DangNhapActivity extends AppCompatActivity {
     Intent intent;
-    TextView txtdangky, txtemail,txtpass;
+    TextView txtdangky, txtemail,txtpass,txtresetpass;
     Button btndangnhap;
     ApiHamster apiHamster;
     CompositeDisposable compositeDisposable= new CompositeDisposable();
@@ -36,6 +36,7 @@ public class DangNhapActivity extends AppCompatActivity {
 
     private void initControl() {
 
+
         txtdangky.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,7 +44,14 @@ public class DangNhapActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+            txtresetpass.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intentresetpass= new Intent(getApplicationContext(), ResetPasswordActivity.class);
+                    startActivity(intentresetpass);
 
+                }
+            });
         btndangnhap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,6 +91,7 @@ public class DangNhapActivity extends AppCompatActivity {
         txtpass= findViewById(R.id.txtPassDangNhap);
         txtdangky= findViewById(R.id.txtDangKy);
         btndangnhap=findViewById(R.id.btnDangNhap);
+        txtresetpass= findViewById(R.id.txtQuenMatKhau);
     }
 
     @Override

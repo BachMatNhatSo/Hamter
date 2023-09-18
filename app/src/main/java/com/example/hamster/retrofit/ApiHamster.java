@@ -39,7 +39,11 @@ public interface ApiHamster {
     Observable<UserModel> dangnhap(
             @Field("email") String email,
             @Field("password") String password
-
+    );
+    @POST("resetpassword.php")
+    @FormUrlEncoded
+    Observable<UserModel> resetpassword(
+            @Field("email") String email
 
     );
 
