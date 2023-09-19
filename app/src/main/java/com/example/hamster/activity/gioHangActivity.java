@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +32,7 @@ public class gioHangActivity extends AppCompatActivity {
     Button btnXacNhan;
     gioHangAdapter adapterGioHang;
     List<gioHang> gioHangList;
+    long tongtiensp  ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class gioHangActivity extends AppCompatActivity {
     }
 
     private void tinhTongTien() {
-        long tongtiensp =0 ;
+        tongtiensp =0;
         for(int i=0 ;i<utils.mangGioHang.size();i++){
             tongtiensp = tongtiensp + (utils.mangGioHang.get(i).getGiasp() * utils.mangGioHang.get(i).getSoluong());
 
@@ -71,6 +73,15 @@ public class gioHangActivity extends AppCompatActivity {
             adapterGioHang = new gioHangAdapter(getApplicationContext(),utils.mangGioHang);
             recyclerView.setAdapter(adapterGioHang);
         }
+        btnXacNhan=findViewById(R.id.btnXacNhanMuaHang);
+        btnXacNhan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentGotoThanhToan = new Intent(getApplicationContext(), ThanhToanActivity.class);
+                intentGotoThanhToan.putExtra("tongtien",tongtiensp);
+                startActivity(intentGotoThanhToan);
+            }
+        });
 
     }
 

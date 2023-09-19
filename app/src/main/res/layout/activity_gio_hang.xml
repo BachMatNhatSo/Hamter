@@ -81,6 +81,7 @@
         android:id="@+id/btnXacNhanMuaHang"
         app:layout_constraintBottom_toBottomOf="parent"
         android:text="Xác Nhận"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
