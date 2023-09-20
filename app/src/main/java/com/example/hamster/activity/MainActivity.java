@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     sanPhamMoiAdapter spAdapter;
     NotificationBadge notificationBadge;
     FrameLayout frameGioHang;
+    ImageView imgSearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void AnhXa(){
+        imgSearch =findViewById(R.id.imgSearch);
         toolbar =findViewById(R.id.toolBarManHinhChinh);
         viewFlipper = findViewById(R.id.viewFlippermanHinhChinh);
         recyclerView = findViewById(R.id.rcvSanPham);
@@ -115,7 +117,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),SearchActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -142,15 +150,14 @@ public class MainActivity extends AppCompatActivity {
                         Intent hamster1 = new Intent(getApplicationContext(),HamsterActivity.class);
                         hamster1.putExtra("loai",1);
                         startActivity(hamster1);
-
                         break;
                     case 2:
                         Intent hamster2 = new Intent(getApplicationContext(),HamsterActivity.class);
                         hamster2.putExtra("loai",2);
                         startActivity(hamster2);
                         break;
-                    case 3:
-                        Intent thucan = new Intent(getApplicationContext(),ThucAnActivity.class);
+                    case 6:
+                        Intent thucan = new Intent(getApplicationContext(),LichSuDonHangActivity.class);
                         startActivity(thucan);
                         break;
                 }

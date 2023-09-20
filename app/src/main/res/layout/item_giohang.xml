@@ -38,7 +38,7 @@
                 <TextView
                     android:gravity="center"
                     android:id="@+id/item_GioHang_Gia"
-                    android:text="500000"
+                    android:text="200000"
                     android:layout_weight="3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">

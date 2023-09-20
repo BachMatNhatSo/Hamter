@@ -1,6 +1,7 @@
 package com.example.hamster.retrofit;
 
 
+import com.example.hamster.model.DonHangModel;
 import com.example.hamster.model.User;
 import com.example.hamster.model.UserModel;
 import com.example.hamster.model.loaiSPModel;
@@ -56,7 +57,17 @@ public interface ApiHamster {
             @Field("diachi") String diachi,
             @Field("soluong") int soluong,
             @Field("chitiet") String chitiet
+    );
+    @POST("xemdonhang.php")
+    @FormUrlEncoded
+    Observable<DonHangModel> xemdonhang(
+            @Field("iduser") int   id
 
+    );
+    @POST("timkiem.php")
+    @FormUrlEncoded
+    Observable<sanPhamMoiModel> search(
+            @Field("search") String search
 
     );
 
